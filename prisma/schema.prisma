@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+// type Guess { 
+//   correct   Boolean
+//   points    Int
+//   playerId  String   
+//   text      String
+//   createdAt DateTime 
+// }
+
+type Winner {
+  playerId  String   
+  username  String   
+  totalPoints Int
+}
+
+model User {
+  playerId  String   @id @default(auto()) @map("_id") @db.ObjectId
+  username  String?   
+  song      String?
+  url       String?
+  image     String?
+  artist    String?
+  album     String?
+  guesses   Guess[]
+  room      Room     @relation(fields: [roomId], references: [roomId])
+  roomId    String   @db.ObjectId @default("")
+  createdAt DateTime @db.Date @default(now())
+}
+model Guess {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  correct   Boolean
+  points    Int
+  playerId  String   
+  text      String
+  author    User     @relation(fields: [authorId], references: [playerId])
+  authorId  String   @db.ObjectId
+  createdAt DateTime @db.Date @default(now())
+}
+
+model Room {
+  roomId    String   @id @default(auto()) @map("_id") @db.ObjectId
+  roomAuthorId String? @db.ObjectId
+  code      String   @unique
+  players     User[]
+  winners   Winner[] 
+  createdAt DateTime @default(now())
+}
+
+
+
+
+
